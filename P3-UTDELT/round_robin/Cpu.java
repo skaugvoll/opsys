@@ -16,8 +16,9 @@ public class Cpu {
      */
 
     private LinkedList<Process> cpuQueue;
-    private long maxCpuTime;
+    private long maxCpuTime; // burst time
     private Statistics statistics;
+    private Process activeProcess;
 
     public Cpu(LinkedList<Process> cpuQueue, long maxCpuTime, Statistics statistics) {
         this.cpuQueue = cpuQueue;
@@ -34,8 +35,17 @@ public class Cpu {
      *				or null	if no process was activated.
      */
     public Event insertProcess(Process p, long clock) {
+
+        // add to queue
         this.cpuQueue.push(p);
-        return null;
+
+        // clock = arrival time for this process ?  The time at which the event will occur.
+        if(this.activeProcess == null){
+            return null;
+        }
+        
+        // return event to make active process leave the cpu
+        return new Event(Event.NEW_PROCESS, clock);
     }
 
     /**
