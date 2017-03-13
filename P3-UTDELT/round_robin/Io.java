@@ -39,7 +39,7 @@ public class Io {
     public Event addIoRequest(Process requestingProcess, long clock) {
         // Incomplete
         this.ioQueue.add(requestingProcess);
-        if(this.getActiveProcess() != null){
+        if(this.getActiveProcess() == null){
             this.startIoOperation(clock);
             return new Event(Event.IO_REQUEST, clock);
         }
@@ -54,7 +54,10 @@ public class Io {
      *					or null	if no operation was initiated.
      */
     public Event startIoOperation(long clock) {
-        // Incomplete
+        if(getActiveProcess() == null){
+            this.activeProcess = this.ioQueue.pop();
+            return new Event(Event.END_IO, clock);
+        }
         return null;
     }
 
