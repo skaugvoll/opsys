@@ -1,5 +1,6 @@
 package round_robin;
 
+import java.net.PortUnreachableException;
 import java.util.LinkedList;
 
 /**
@@ -13,8 +14,15 @@ public class Cpu {
      * @param maxCpuTime	The Round Robin time quant to be used.
      * @param statistics	A reference to the statistics collector.
      */
+
+    private LinkedList<Process> cpuQueue;
+    private long maxCpuTime;
+    private Statistics statistics;
+
     public Cpu(LinkedList<Process> cpuQueue, long maxCpuTime, Statistics statistics) {
-        // Incomplete
+        this.cpuQueue = cpuQueue;
+        this. maxCpuTime = maxCpuTime;
+        this.statistics = statistics;
     }
 
     /**
@@ -26,7 +34,7 @@ public class Cpu {
      *				or null	if no process was activated.
      */
     public Event insertProcess(Process p, long clock) {
-        // Incomplete
+        this.cpuQueue.push(p);
         return null;
     }
 
