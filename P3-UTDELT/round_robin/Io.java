@@ -38,6 +38,11 @@ public class Io {
      */
     public Event addIoRequest(Process requestingProcess, long clock) {
         // Incomplete
+        this.ioQueue.add(requestingProcess);
+        if(this.getActiveProcess() != null){
+            this.startIoOperation(clock);
+            return new Event(Event.IO_REQUEST, clock);
+        }
         return null;
     }
 
