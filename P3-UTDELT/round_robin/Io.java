@@ -9,6 +9,12 @@ import java.util.LinkedList;
 public class Io {
     private Process activeProcess = null;
 
+    private LinkedList<Process> ioQueue;
+    private long avgIoTime;
+    private Statistics statistics;
+
+
+
     /**
      * Creates a new I/O device with the given parameters.
      * @param ioQueue		The I/O queue to be used.
@@ -17,6 +23,9 @@ public class Io {
      */
     public Io(LinkedList<Process> ioQueue, long avgIoTime, Statistics statistics) {
         // Incomplete
+        this.ioQueue = ioQueue;
+        this.avgIoTime=avgIoTime;
+        this.statistics = statistics;
     }
 
     /**
