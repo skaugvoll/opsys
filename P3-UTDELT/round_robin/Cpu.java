@@ -18,7 +18,7 @@ public class Cpu {
     private LinkedList<Process> cpuQueue;
     private long maxCpuTime; // burst time
     private Statistics statistics;
-    private Process activeProcess;
+    private Process activeProcess = null;
 
     public Cpu(LinkedList<Process> cpuQueue, long maxCpuTime, Statistics statistics) {
         this.cpuQueue = cpuQueue;
@@ -43,7 +43,7 @@ public class Cpu {
         if(this.activeProcess == null){
             return null;
         }
-        
+
         // return event to make active process leave the cpu
         return new Event(Event.NEW_PROCESS, clock);
     }
@@ -58,7 +58,20 @@ public class Cpu {
      */
     public Event switchProcess(long clock) {
         // Incomplete
-        return null;
+        //return null;
+
+        // round robin, hvor lang tid er det igjen av processen? hvis den ikke er ferdig, så legg den tilbake
+        // bakerst i køen, sammen med gjennværende eksivkeringstid. og la en ny process starte.
+        if (this.cpuQueue.isEmpty()){
+            return null;
+        }
+
+        Process newProcess = this.cpuQueue.pop();
+        this.cpuQueue.push(this.activeProcess);
+        this.activeProcess = newProcess;
+
+        return new Event(Event.SWITCH_PROCESS, clock);
+
     }
 
     /**
