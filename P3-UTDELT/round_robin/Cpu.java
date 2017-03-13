@@ -90,8 +90,7 @@ public class Cpu {
      * @return	The process currently using the CPU.
      */
     public Process getActiveProcess() {
-        // Incomplete
-        return null;
+        return this.activeProcess;
     }
 
     /**
