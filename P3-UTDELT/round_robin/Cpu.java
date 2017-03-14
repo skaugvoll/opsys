@@ -19,6 +19,8 @@ public class Cpu {
     private long maxCpuTime; // burst time
     private Statistics statistics;
     private Process activeProcess = null;
+    private long activeProcessStart;
+    private long timePassed;
 
     public Cpu(LinkedList<Process> cpuQueue, long maxCpuTime, Statistics statistics) {
         this.cpuQueue = cpuQueue;
@@ -28,7 +30,7 @@ public class Cpu {
 
     /**
      * Adds a process to the CPU queue, and activates (switches in) the first process
-     * in the CPU queue if the CPU is idle.
+     * in the CPU queue, if the CPU is idle.
      * @param p		The process to be added to the CPU queue.
      * @param clock	The global time.
      * @return		The event causing the process that was activated to leave the CPU,
@@ -37,15 +39,17 @@ public class Cpu {
     public Event insertProcess(Process p, long clock) {
 
         // add to queue
-        this.cpuQueue.push(p);
+        this.cpuQueue.add(p);
 
         // clock = arrival time for this process ?  The time at which the event will occur.
         if(this.activeProcess == null){
-            return null;
-        }
+            System.out.println("test");
+            return new Event(Event.SWITCH_PROCESS, clock);
 
+        }
+        System.out.println("asdadsasd");
         // return event to make active process leave the cpu
-        return new Event(Event.NEW_PROCESS, clock);
+        return null;
     }
 
     /**
@@ -58,19 +62,32 @@ public class Cpu {
      */
     public Event switchProcess(long clock) {
         // Incomplete
-        //return null;
 
         // round robin, hvor lang tid er det igjen av processen? hvis den ikke er ferdig, så legg den tilbake
         // bakerst i køen, sammen med gjennværende eksivkeringstid. og la en ny process starte.
         if (this.cpuQueue.isEmpty()){
+            System.out.println("hei");
             return null;
         }
 
-        Process newProcess = this.cpuQueue.pop();
-        this.cpuQueue.push(this.activeProcess);
-        this.activeProcess = newProcess;
 
-        return new Event(Event.SWITCH_PROCESS, clock);
+
+        Process newProcess = this.cpuQueue.pop(); // gets first process in cpuQueue
+        long burstTime = newProcess.getProcessTimeNeeded();
+
+        if(burstTime > maxCpuTime) {
+            this.cpuQueue.add(this.activeProcess); // pushes the pre active process to back of cpu queue
+            newProcess.updateTimeNeeded(maxCpuTime);
+            this.activeProcess = newProcess; // activates the new process
+            return new Event(Event.SWITCH_PROCESS, clock + this.maxCpuTime);
+            }
+        else if(newProcess.getTimeToNextIoOperation() == 0){
+            return new Event(Event.IO_REQUEST, clock + newProcess.getProcessTimeNeeded());
+        }
+        else {
+            return new Event(Event.END_PROCESS, clock + newProcess.getProcessTimeNeeded());
+
+        }
 
     }
 
@@ -99,6 +116,10 @@ public class Cpu {
      */
     public void timePassed(long timePassed) {
         // Incomplete
+        this.timePassed = timePassed;
+
+
+
     }
 
 }

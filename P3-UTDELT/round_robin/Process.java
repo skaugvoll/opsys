@@ -102,4 +102,14 @@ public class Process {
 	}
 
 	// Add more methods as needed
+	public long getProcessTimeNeeded(){
+		return this.cpuTimeNeeded;
+	}
+
+	public void updateTimeNeeded(long timeUsed){
+		this.cpuTimeNeeded -= timeUsed;
+	}
+
+	public long getTimeToNextIoOperation(){return timeToNextIoOperation;}
+
 }
