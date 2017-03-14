@@ -17,6 +17,8 @@ public class Event implements Comparable
 	public static final int IO_REQUEST = 4;
     /** Event type describing the end of the current I/O operation */
 	public static final int END_IO = 5;
+	/** Event type describing the end of the current I/O operation */
+	public static final int NEXT_PROCESS = 6;
 
     /** The sort of event, see above. */
 	private int type;

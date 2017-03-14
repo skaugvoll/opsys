@@ -128,10 +128,15 @@ public class Simulator
 			case Event.END_IO:
 				endIoOperation();
 				break;
+            case Event.NEXT_PROCESS:
+                moveIntoCPU();
+                break;
 		}
 	}
 
-	/**
+
+
+    /**
 	 * Simulates a process arrival/creation.
 	 */
 	private void createProcess() {
@@ -194,6 +199,7 @@ public class Simulator
 	 */
 	private void processIoRequest() {
 		// Incomplete
+        ioQueue.add(cpu.getActiveProcess());
 	}
 
 	/**
@@ -203,6 +209,10 @@ public class Simulator
 	private void endIoOperation() {
 		// Incomplete
 	}
+
+    private void moveIntoCPU() {
+        //incomplete
+    }
 
 
 	/* The following methods are used by the GUI and should not be removed or modified. */

@@ -22,6 +22,7 @@ public class Cpu {
     private long activeProcessStart;
     private long timePassed;
 
+
     public Cpu(LinkedList<Process> cpuQueue, long maxCpuTime, Statistics statistics) {
         this.cpuQueue = cpuQueue;
         this. maxCpuTime = maxCpuTime;
@@ -44,8 +45,7 @@ public class Cpu {
         // clock = arrival time for this process ?  The time at which the event will occur.
         if(this.activeProcess == null){
             System.out.println("test");
-            return new Event(Event.SWITCH_PROCESS, clock);
-
+            return switchProcess(clock);
         }
         System.out.println("asdadsasd");
         // return event to make active process leave the cpu
@@ -65,23 +65,41 @@ public class Cpu {
 
         // round robin, hvor lang tid er det igjen av processen? hvis den ikke er ferdig, så legg den tilbake
         // bakerst i køen, sammen med gjennværende eksivkeringstid. og la en ny process starte.
-        if (this.cpuQueue.isEmpty()){
+        if (this.cpuQueue.isEmpty() && this.activeProcess == null){
             System.out.println("hei");
             return null;
         }
+        else if(this.activeProcess != null){
+            //sjekk prosessen som allerede er i cpu
+            long burstTime = this.activeProcess.getProcessTimeNeeded();
+
+            if(this.activeProcess.getTimeToNextIoOperation() - maxCpuTime <= 0){
+                // send inn i io ko
+                return new Event(Event.IO_REQUEST, clock);
+            }
+
+            else if(burstTime > maxCpuTime) {
+                this.cpuQueue.add(this.activeProcess); // pushes the pre active process to back of cpu queue
+                this.activeProcess.updateTimeNeeded(maxCpuTime);
+
+                return new Event(Event.NEXT_PROCESS, clock + this.maxCpuTime);
+            }
 
 
+        }
 
+        // if CPU queue has processes and there is not an active process
         Process newProcess = this.cpuQueue.pop(); // gets first process in cpuQueue
         long burstTime = newProcess.getProcessTimeNeeded();
 
         if(burstTime > maxCpuTime) {
-            this.cpuQueue.add(this.activeProcess); // pushes the pre active process to back of cpu queue
-            newProcess.updateTimeNeeded(maxCpuTime);
             this.activeProcess = newProcess; // activates the new process
+            this.cpuQueue.add(newProcess); // pushes the pre active process to back of cpu queue
+            newProcess.updateTimeNeeded(maxCpuTime);
             return new Event(Event.SWITCH_PROCESS, clock + this.maxCpuTime);
             }
-        else if(newProcess.getTimeToNextIoOperation() == 0){
+            // også sjekk om tiden er innefor tid tilgjengelig i CPU
+        else if(newProcess.getTimeToNextIoOperation() == 0 ){
             return new Event(Event.IO_REQUEST, clock + newProcess.getProcessTimeNeeded());
         }
         else {
