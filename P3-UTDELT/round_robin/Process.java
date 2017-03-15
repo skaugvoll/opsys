@@ -52,7 +52,7 @@ public class Process {
 		// CPU time needed varies from 100 to 10000 milliseconds
 		cpuTimeNeeded = 100 + (long)(Math.random()*9900);
 		// Average interval between I/O requests varies from 1% to 25% of CPU time needed
-		avgIoInterval = (1 + (long)(Math.random()*25))*cpuTimeNeeded/100;
+		avgIoInterval = (1 + (long)(Math.random()*25))*cpuTimeNeeded/100; // hvor lenge prosessen skal være i IO cpu
 		// The first and latest event involving this process is its creation
 		timeOfLastEvent = creationTime;
 		// Assign a process ID
@@ -108,8 +108,12 @@ public class Process {
 
 	public void updateTimeNeeded(long timeUsed){
 		this.cpuTimeNeeded -= timeUsed;
+		this.timeToNextIoOperation -= timeUsed;
 	}
 
 	public long getTimeToNextIoOperation(){return timeToNextIoOperation;}
 
+	public void setIoRequestTime(long ioRequestTime) {
+		this.timeToNextIoOperation = ioRequestTime;
+	}
 }

@@ -2,6 +2,7 @@ package round_robin;
 
 import java.net.PortUnreachableException;
 import java.util.LinkedList;
+import java.util.NoSuchElementException;
 
 /**
  * This class implements functionality associated with
@@ -65,46 +66,58 @@ public class Cpu {
 
         // round robin, hvor lang tid er det igjen av processen? hvis den ikke er ferdig, så legg den tilbake
         // bakerst i køen, sammen med gjennværende eksivkeringstid. og la en ny process starte.
+
+        // hvis ingen koer og ingen aktiv prosess
         if (this.cpuQueue.isEmpty() && this.activeProcess == null){
             System.out.println("hei");
             return null;
         }
-        else if(this.activeProcess != null){
+        // hvis aktiv og ko
+        else if(this.activeProcess != null && !this.cpuQueue.isEmpty()){
             //sjekk prosessen som allerede er i cpu
             long burstTime = this.activeProcess.getProcessTimeNeeded();
 
+            // hvis det skal utfores en io request innen tiden igjen i cpu.
             if(this.activeProcess.getTimeToNextIoOperation() - maxCpuTime <= 0){
-                // send inn i io ko
-                return new Event(Event.IO_REQUEST, clock);
+                // send inn i io ko, men si at vi har brukt tiden fram til IO request skal utføres, av total CPU Tid
+                return new Event(Event.IO_REQUEST, clock + this.activeProcess.getTimeToNextIoOperation());
             }
-
+            // hvis det ikke skal utføres IO innen denne cpu tiden, og prosessen blir ikke ferdig
             else if(burstTime > maxCpuTime) {
                 this.cpuQueue.add(this.activeProcess); // pushes the pre active process to back of cpu queue
                 this.activeProcess.updateTimeNeeded(maxCpuTime);
 
                 return new Event(Event.NEXT_PROCESS, clock + this.maxCpuTime);
             }
-
-
         }
-
-        // if CPU queue has processes and there is not an active process
-        Process newProcess = this.cpuQueue.pop(); // gets first process in cpuQueue
+        // hvis ko men ingen aktiv prosess
+        Process newProcess = null;
+        try {
+            newProcess = this.cpuQueue.pop(); // gets first process in cpuQueue
+        }
+        catch (NoSuchElementException e){
+            return null; // kan ikke gjøre noe av det vi ønsker hvis vi ikke har en prosess.
+        }
         long burstTime = newProcess.getProcessTimeNeeded();
+        this.activeProcess = newProcess; // activates the new process
 
-        if(burstTime > maxCpuTime) {
-            this.activeProcess = newProcess; // activates the new process
+        // hvis trenger mer tid enn tilgjengelig i cpu, og ikke IO innenfor cpu-tid
+        if(burstTime > maxCpuTime && newProcess.getTimeToNextIoOperation() - maxCpuTime > 0) {
             this.cpuQueue.add(newProcess); // pushes the pre active process to back of cpu queue
             newProcess.updateTimeNeeded(maxCpuTime);
             return new Event(Event.SWITCH_PROCESS, clock + this.maxCpuTime);
             }
-            // også sjekk om tiden er innefor tid tilgjengelig i CPU
-        else if(newProcess.getTimeToNextIoOperation() == 0 ){
+        // hvis tiden til IO request skal skje innenfor denne cpu-kjøringen
+        else if(newProcess.getTimeToNextIoOperation() < maxCpuTime ){
+            // oppdater prosessen med at den kjører fram til IO request og at den utfører det
+            newProcess.updateTimeNeeded(newProcess.getTimeToNextIoOperation());
+            //må overføre faenskapet til IO kø
             return new Event(Event.IO_REQUEST, clock + newProcess.getProcessTimeNeeded());
         }
+        // hvis nok kjøretid denne gangen og ingen IO request
         else {
+            newProcess.updateTimeNeeded(burstTime);
             return new Event(Event.END_PROCESS, clock + newProcess.getProcessTimeNeeded());
-
         }
 
     }
@@ -117,7 +130,8 @@ public class Cpu {
      */
     public Event activeProcessLeft(long clock) {
         // Incomplete
-        return null;
+        this.activeProcess = null;
+        return this.switchProcess(clock);
     }
 
     /**
@@ -134,10 +148,16 @@ public class Cpu {
      */
     public void timePassed(long timePassed) {
         // Incomplete
-        this.timePassed = timePassed;
+        // oppdaterer hvor lenge prossessen har vært i cpu. (blir bre brukt her, ellers statestikk)
+        // korrigerings metode, for å fortelle aktiv prosess om tiden såm har gått og den har vært i CPU men IO request event har happend.
+//        if(this.activeProcess != null) {
+//            this.activeProcess.updateTimeNeeded(timePassed);
+//        }
+
 
 
 
     }
+
 
 }

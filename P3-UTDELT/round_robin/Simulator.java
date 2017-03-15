@@ -159,7 +159,9 @@ public class Simulator
 		Process p = memory.checkMemory(clock);
 		// As long as there is enough memory, processes are moved from the memory queue to the cpu queue
 		while(p != null) {
-			
+			//her må vi sette IO tiden på prosessen, math. rendom. for hver prosess
+			long requestTime = (1 + (long)(Math.random()*25))*p.getProcessTimeNeeded()/100;
+			p.setIoRequestTime(requestTime);
 			// TODO: Add this process to the CPU queue!
 			// Also add new events to the event queue if needed
             eventQueue.insertEvent(this.cpu.insertProcess(p, clock));
@@ -167,9 +169,9 @@ public class Simulator
 
 			// Since we haven't implemented the CPU and I/O device yet,
 			// we let the process leave the system immediately, for now.
-			memory.processCompleted(p);
-			// Try to use the freed memory:
-			transferProcessFromMemToReady();
+//			memory.processCompleted(p);
+//			// Try to use the freed memory:
+//			transferProcessFromMemToReady();
 			// Update statistics
 			p.updateStatistics(statistics);
 
@@ -183,7 +185,9 @@ public class Simulator
 	 */
 	private void switchProcess() {
 		// Incomplete
-        eventQueue.insertEvent(this.cpu.switchProcess(clock));
+		System.out.println("switch process");
+		eventQueue.insertEvent(this.cpu.switchProcess(clock));
+
 	}
 
 	/**
@@ -191,6 +195,11 @@ public class Simulator
 	 */
 	private void endProcess() {
 		// Incomplete
+		//hent fra cpu den aktive prosessen og avslutt den
+		System.out.println("end process");
+		Process activeProcess = cpu.getActiveProcess();
+		eventQueue.insertEvent(cpu.activeProcessLeft(clock));
+		memory.processCompleted(activeProcess);
 	}
 
 	/**
@@ -199,7 +208,10 @@ public class Simulator
 	 */
 	private void processIoRequest() {
 		// Incomplete
-        ioQueue.add(cpu.getActiveProcess());
+		System.out.println("process io");
+		ioQueue.add(cpu.getActiveProcess());
+		cpu.activeProcessLeft(clock);
+		eventQueue.insertEvent(new Event(Event.SWITCH_PROCESS,clock));
 	}
 
 	/**
@@ -208,10 +220,12 @@ public class Simulator
 	 */
 	private void endIoOperation() {
 		// Incomplete
+		System.out.println("end io");
 	}
 
     private void moveIntoCPU() {
-        //incomplete
+		System.out.println("into cpu");
+		//incomplete
     }
 
 
