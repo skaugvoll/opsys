@@ -88,7 +88,8 @@ public class Cpu {
                 this.cpuQueue.add(this.activeProcess); // pushes the pre active process to back of cpu queue
                 this.activeProcess.updateTimeNeeded(maxCpuTime);
                 System.out.println("hvis det ikke skal utføres IO innen denne cpu tiden, og prosessen blir ikke ferdig");
-                return new Event(Event.NEXT_PROCESS, clock + this.maxCpuTime);
+//                this.activeProcessLeft(clock + this.maxCpuTime);
+                return new Event(Event.SWITCH_PROCESS, clock + this.maxCpuTime);
             }
         }
         // hvis ko men ingen aktiv prosess
@@ -98,7 +99,7 @@ public class Cpu {
             newProcess = this.cpuQueue.pop(); // gets first process in cpuQueue
         }
         catch (NoSuchElementException e){
-            System.out.println("No processes in CPU queue, therefor returning null");
+            System.out.println("Ingen prosess i CPU kø, så returnerer null fra switch");
             return null; // kan ikke gjøre noe av det vi ønsker hvis vi ikke har en prosess.
         }
         long burstTime = newProcess.getProcessTimeNeeded();
@@ -156,9 +157,9 @@ public class Cpu {
         // Incomplete
         // oppdaterer hvor lenge prossessen har vært i cpu. (blir bre brukt her, ellers statestikk)
         // korrigerings metode, for å fortelle aktiv prosess om tiden såm har gått og den har vært i CPU men IO request event har happend.
-//       if(this.activeProcess != null) {
-//            this.activeProcess.updateTimeNeeded(timePassed);
-//        }
+       if(this.activeProcess != null) {
+            this.activeProcess.updateTimeNeeded(timePassed);
+        }
 
 
 

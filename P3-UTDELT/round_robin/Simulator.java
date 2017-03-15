@@ -160,7 +160,7 @@ public class Simulator
 		// As long as there is enough memory, processes are moved from the memory queue to the cpu queue
 		while(p != null) {
 			//her må vi sette IO tiden på prosessen, math. rendom. for hver prosess
-			long requestTime = (1 + (long)(Math.random()*25))*p.getProcessTimeNeeded()/100;
+			long requestTime = (1 + (long)(Math.random()*2*p.getAverageIOtime()));
 			p.setIoRequestTime(requestTime);
 			// TODO: Add this process to the CPU queue!
 			// Also add new events to the event queue if needed
@@ -206,12 +206,13 @@ public class Simulator
 	 * Processes an event signifying that the active process needs to
 	 * perform an I/O operation.
 	 */
+	// IO_REQUEST
 	private void processIoRequest() {
 		// Incomplete
 		System.out.println("process io");
-		io.addIoRequest(cpu.getActiveProcess(), clock);
+		eventQueue.insertEvent(io.addIoRequest(cpu.getActiveProcess(), clock));
 		eventQueue.insertEvent(cpu.activeProcessLeft(clock));
-		eventQueue.insertEvent(new Event(Event.SWITCH_PROCESS,clock));
+//		eventQueue.insertEvent(new Event(Event.SWITCH_PROCESS,clock));
 	}
 
 	/**
@@ -221,6 +222,8 @@ public class Simulator
 	private void endIoOperation() {
 		// Incomplete
 		System.out.println("end io");
+		Process p = io.removeActiveProcess();
+		eventQueue.insertEvent(cpu.insertProcess(p, clock));
 	}
 
     private void moveIntoCPU() {

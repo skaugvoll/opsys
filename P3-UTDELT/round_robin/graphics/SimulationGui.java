@@ -164,6 +164,7 @@ public class SimulationGui extends JFrame implements ActionListener, Runnable {
 	 * @param time	The (simulated) time that has passed since the last call to this method.
 	 */
 	public void onTimePassed(long time) {
+		System.out.println("time" + time);
 		try	{
 			if (isShowing())
 				Thread.sleep((10000-simulationSpeedSlider.getValue())*time/3000);

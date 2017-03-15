@@ -40,8 +40,7 @@ public class Io {
         // Incomplete
         this.ioQueue.add(requestingProcess);
         if(this.getActiveProcess() == null){
-            this.startIoOperation(clock);
-            return new Event(Event.IO_REQUEST, clock);
+            return this.startIoOperation(clock);
         }
         return null;
     }
@@ -56,7 +55,7 @@ public class Io {
     public Event startIoOperation(long clock) {
         if(getActiveProcess() == null){
             this.activeProcess = this.ioQueue.pop();
-            return new Event(Event.END_IO, clock);
+            return new Event(Event.END_IO, clock + activeProcess.getAverageIOtime());
         }
         return null;
     }
@@ -67,6 +66,9 @@ public class Io {
      */
     public void timePassed(long timePassed) {
         // Incomplete
+//        if(this.activeProcess != null){
+//            this.activeProcess.updateTimeNeeded(timePassed);
+//        }
     }
 
     /**
@@ -75,7 +77,10 @@ public class Io {
      */
     public Process removeActiveProcess() {
         // Incomplete
-        return null;
+        System.out.println("removing active IO process");
+        Process process = this.getActiveProcess();
+        this.activeProcess = null;
+        return process;
     }
 
     public Process getActiveProcess() {

@@ -39,6 +39,7 @@ public class Process {
 
 	/** The global time of the last event involving this process */
 	private long timeOfLastEvent;
+	private long averageIOtime;
 
 	/**
 	 * Creates a new process with given parameters. Other parameters are randomly
@@ -115,5 +116,9 @@ public class Process {
 
 	public void setIoRequestTime(long ioRequestTime) {
 		this.timeToNextIoOperation = ioRequestTime;
+	}
+
+	public long getAverageIOtime() {
+		return avgIoInterval;
 	}
 }
