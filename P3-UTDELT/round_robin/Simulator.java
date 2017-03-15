@@ -67,7 +67,7 @@ public class Simulator
 	 */
 	public void simulate() {
 
-		System.out.print("Simulating...");
+		System.out.println("Simulating...");
 		// Genererate the first process arrival event
 		eventQueue.insertEvent(new Event(Event.NEW_PROCESS, 0));
 		// Process events until the simulation length is exceeded:
