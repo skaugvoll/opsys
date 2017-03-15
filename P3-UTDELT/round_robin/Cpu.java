@@ -80,6 +80,8 @@ public class Cpu {
             // hvis det skal utfores en io request innen tiden igjen i cpu.
             if(this.activeProcess.getTimeToNextIoOperation() - maxCpuTime <= 0){
                 // send inn i io ko, men si at vi har brukt tiden fram til IO request skal utføres, av total CPU Tid
+                System.out.println(this.activeProcess.getTimeToNextIoOperation() - maxCpuTime );
+                System.out.println("tid til IO AKTIV PROSESS");
                 System.out.println("hvis det skal utfores en io request innen tiden igjen i cpu.");
                 return new Event(Event.IO_REQUEST, clock + this.activeProcess.getTimeToNextIoOperation());
             }
@@ -107,6 +109,8 @@ public class Cpu {
 
         // hvis trenger mer tid enn tilgjengelig i cpu, og ikke IO innenfor cpu-tid
         if(burstTime > maxCpuTime && newProcess.getTimeToNextIoOperation() - maxCpuTime > 0) {
+            System.out.println(newProcess.getTimeToNextIoOperation() - maxCpuTime );
+            System.out.println("tid til IO");
             this.cpuQueue.add(newProcess); // pushes the pre active process to back of cpu queue
             newProcess.updateTimeNeeded(maxCpuTime);
             System.out.println("hvis trenger mer tid enn tilgjengelig i cpu, og ikke IO innenfor cpu-tid");

@@ -108,8 +108,19 @@ public class Process {
 	}
 
 	public void updateTimeNeeded(long timeUsed){
-		this.cpuTimeNeeded -= timeUsed;
-		this.timeToNextIoOperation -= timeUsed;
+		if(this.cpuTimeNeeded - timeUsed >= 0) {
+			this.cpuTimeNeeded -= timeUsed;
+		}
+		else{
+			this.cpuTimeNeeded = 0;
+		}
+		if(this.timeToNextIoOperation - timeUsed >= 0){
+			this.timeToNextIoOperation -= timeUsed;
+		}
+		else{
+			this.timeToNextIoOperation = 0;
+		}
+
 	}
 
 	public long getTimeToNextIoOperation(){return timeToNextIoOperation;}
