@@ -1,6 +1,7 @@
 package round_robin;
 
 import java.util.LinkedList;
+import java.util.NoSuchElementException;
 
 /**
  * This class implements functionality associated with
@@ -54,8 +55,12 @@ public class Io {
      */
     public Event startIoOperation(long clock) {
         if(getActiveProcess() == null){
-            this.activeProcess = this.ioQueue.pop();
-            return new Event(Event.END_IO, clock + activeProcess.getAverageIOtime());
+            try {
+                this.activeProcess = this.ioQueue.pop();
+                return new Event(Event.END_IO, clock + activeProcess.getAverageIOtime());
+            }catch (NoSuchElementException e){
+                return null;
+            }
         }
         return null;
     }
@@ -66,9 +71,9 @@ public class Io {
      */
     public void timePassed(long timePassed) {
         // Incomplete
-//        if(this.activeProcess != null){
-//            this.activeProcess.updateTimeNeeded(timePassed);
-//        }
+        if(this.activeProcess != null){
+            this.activeProcess.updateTimeNeeded(timePassed);
+        }
     }
 
     /**
