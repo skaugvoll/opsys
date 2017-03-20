@@ -100,7 +100,7 @@ public class Cpu {
     }
 
     private Event getNextEvent(long clock) {
-        if(activeProcess.getProcessTimeNeeded() < maxCpuTime){
+        if(activeProcess.getProcessTimeNeeded() <= maxCpuTime){
             if(activeProcess.getProcessTimeNeeded() <= activeProcess.getTimeToNextIoOperation()){
                 activeProcess.updateTimeNeeded(activeProcess.getProcessTimeNeeded());
                 return new Event(Event.END_PROCESS, clock + activeProcess.getProcessTimeNeeded());
@@ -147,11 +147,14 @@ public class Cpu {
      * @param timePassed	The amount of time that has passed since the last call to this method.
      */
     public void timePassed(long timePassed) {
+        System.out.println("Time passed: " + timePassed);
         // Incomplete
         // oppdaterer hvor lenge prossessen har vært i cpu. (blir bre brukt her, ellers statestikk)
         // korrigerings metode, for å fortelle aktiv prosess om tiden såm har gått og den har vært i CPU men IO request event har happend.
         if(this.activeProcess != null) {
             this.activeProcess.updateTimeNeeded(timePassed);
+            // sjekk om den tiden som har gått gjor at faenskapet ble ferdig eller skal til IO ?
+
         }
 
     }

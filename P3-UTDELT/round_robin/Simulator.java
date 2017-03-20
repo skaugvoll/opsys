@@ -128,9 +128,7 @@ public class Simulator
 			case Event.END_IO:
 				endIoOperation();
 				break;
-            case Event.NEXT_PROCESS:
-                moveIntoCPU();
-                break;
+
 		}
 	}
 
@@ -230,10 +228,7 @@ public class Simulator
 
 	}
 
-    private void moveIntoCPU() {
-		System.out.println("into cpu");
-		//incomplete
-    }
+
 
 
 	/* The following methods are used by the GUI and should not be removed or modified. */
