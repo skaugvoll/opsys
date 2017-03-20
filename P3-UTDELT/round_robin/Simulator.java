@@ -188,6 +188,7 @@ public class Simulator
 		System.out.println("switch process");
 		eventQueue.insertEvent(this.cpu.switchProcess(clock));
 
+
 	}
 
 	/**
@@ -210,8 +211,9 @@ public class Simulator
 	private void processIoRequest() {
 		// Incomplete
 		System.out.println("process io");
-		eventQueue.insertEvent(cpu.activeProcessLeft(clock));
+//		eventQueue.insertEvent(cpu.activeProcessLeft(clock));
 		eventQueue.insertEvent(io.addIoRequest(cpu.getActiveProcess(), clock));
+		eventQueue.insertEvent(cpu.activeProcessLeft(clock));
 //		eventQueue.insertEvent(new Event(Event.SWITCH_PROCESS,clock));
 	}
 

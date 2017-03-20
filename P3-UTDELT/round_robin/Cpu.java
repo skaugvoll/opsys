@@ -92,7 +92,7 @@ public class Cpu {
             this.activeProcess = cpuQueue.pop();
             Event nextEvent = getNextEvent(clock);
             //oppdater tid
-            this.activeProcess = null;
+//            this.activeProcess = null;
             return nextEvent;
 
 
