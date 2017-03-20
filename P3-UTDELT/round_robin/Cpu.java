@@ -66,73 +66,31 @@ public class Cpu {
         // bakerst i køen, sammen med gjennværende eksivkeringstid. og la en ny process starte.
 
         // hvis ingen koer og ingen aktiv prosess
-        if (this.cpuQueue.isEmpty() && this.activeProcess == null){
-            System.out.println("hvis ingen koer og ingen aktiv prosess");
-            return null;
-        }
-        // hvis aktiv og ko
-        else if(this.activeProcess != null && !this.cpuQueue.isEmpty()){
-            //sjekk prosessen som allerede er i cpu
-            long burstTime = this.activeProcess.getProcessTimeNeeded();
 
-            // hvis det skal utfores en io request innen tiden igjen i cpu.
-            if(this.activeProcess.getTimeToNextIoOperation() <= maxCpuTime){
-                // send inn i io ko, men si at vi har brukt tiden fram til IO request skal utføres, av total CPU Tid
-                System.out.println(this.activeProcess.getTimeToNextIoOperation() - maxCpuTime );
-                System.out.println("tid til IO AKTIV PROSESS");
-                System.out.println("hvis det skal utfores en io request innen tiden igjen i cpu.");
-                return new Event(Event.IO_REQUEST, clock + this.activeProcess.getTimeToNextIoOperation());
-            }
+        // hvis aktiv og ko
+
             // skal ikke i io
-            else if(burstTime > maxCpuTime) {
-                this.activeProcess.updateTimeNeeded(maxCpuTime);
-                this.cpuQueue.add(this.activeProcess); // pushes the pre active process to back of cpu queue
-                System.out.println("hvis det ikke skal utføres IO innen denne cpu tiden, og prosessen ikke blir ferdig");
-//                this.activeProcessLeft(clock + this.maxCpuTime);
-                return new Event(Event.SWITCH_PROCESS, clock + this.maxCpuTime);
-            }
-        }else{
 
             // hvis ko men ingen aktiv prosess
-            System.out.println("hvis ko men ingen aktiv prosess");
-            Process newProcess = null;
-            try {
-                newProcess = this.cpuQueue.pop(); // gets first process in cpuQueue
-            }
-            catch (NoSuchElementException e){
-                System.out.println("Ingen prosess i CPU kø, så returnerer null fra switch");
-                return null; // kan ikke gjøre noe av det vi ønsker hvis vi ikke har en prosess.
-            }
-            long burstTime = newProcess.getProcessTimeNeeded();
-            this.activeProcess = newProcess; // activates the new process
 
 
 
             // hvis trenger mer tid enn tilgjengelig i cpu, og ikke IO innenfor cpu-tid
-            if(burstTime > maxCpuTime && newProcess.getTimeToNextIoOperation() > maxCpuTime) {
-                this.cpuQueue.add(newProcess); // pushes the pre active process to back of cpu queue
-                newProcess.updateTimeNeeded(maxCpuTime);
-                return new Event(Event.SWITCH_PROCESS, clock + this.maxCpuTime);
-            }
+
             // hvis tiden til IO request skal skje innenfor denne cpu-kjøringen
-            else if(newProcess.getTimeToNextIoOperation() < maxCpuTime ){
-                // oppdater prosessen med at den kjører fram til IO request og at den utfører det
-                newProcess.updateTimeNeeded(newProcess.getTimeToNextIoOperation());
-                //må overføre faenskapet til IO kø
-                System.out.println("hvis tiden til IO request skal skje innenfor denne cpu-kjøringen");
 
-                return new Event(Event.IO_REQUEST, clock + newProcess.getProcessTimeNeeded());
-            }
+
             // hvis nok kjøretid denne gangen og ingen IO request
-            else {
-                newProcess.updateTimeNeeded(burstTime);
-                System.out.println("hvis nok kjøretid denne gangen og ingen IO request");
-                return new Event(Event.END_PROCESS, clock + newProcess.getProcessTimeNeeded());
-            }
 
-        }
+
+
+        /*
+        * if timeNeeded < maxCPUtime
+        *   if timeNeeded < timeToNextIOrequest
+        *
+        * */
+
         return null;
-
     }
 
     /**
