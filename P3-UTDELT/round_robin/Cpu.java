@@ -65,32 +65,54 @@ public class Cpu {
         // round robin, hvor lang tid er det igjen av processen? hvis den ikke er ferdig, så legg den tilbake
         // bakerst i køen, sammen med gjennværende eksivkeringstid. og la en ny process starte.
 
-        // hvis ingen koer og ingen aktiv prosess
 
-        // hvis aktiv og ko
+        // hvis ikke aktiv
+        if(this.activeProcess == null){
+            // Er det kø?
+            // Hvis ikke kø
+            if(cpuQueue.isEmpty()){
+                return null;
+            }
+            // Hvis kø
+            else{
+                // ut av kø
+                // inn i cpu (aktiv)
+                this.activeProcess = cpuQueue.pop();
+                // Sjekk event
+                Event nextEvent = getNextEvent(activeProcess, clock);
+                // oppdater tid
+                this.activeProcess.updateTimeNeeded(nextEvent.getTime()-clock);
+                return nextEvent;
+            }
+            // hvis aktive
+        }else{
+            // sendes aktiv bakerst i kø
+            Process currentP = this.activeProcess;
+            this.activeProcess = null;
+            cpuQueue.add(currentP);
+            this.activeProcess = cpuQueue.pop();
+            Event nextEvent = getNextEvent(this.activeProcess, clock);
+            //oppdater tid
+            this.activeProcess.updateTimeNeeded(nextEvent.getTime() - clock);
+            return nextEvent;
 
-            // skal ikke i io
 
-            // hvis ko men ingen aktiv prosess
+        }
+    }
 
+    private Event getNextEvent(Process activeProcess, long clock) {
+        if(activeProcess.getProcessTimeNeeded() < maxCpuTime){
+            if(activeProcess.getProcessTimeNeeded() <= activeProcess.getTimeToNextIoOperation()){
+                return new Event(Event.END_PROCESS, clock + maxCpuTime);
 
+            }else if(activeProcess.getTimeToNextIoOperation() <= activeProcess.getProcessTimeNeeded()){
+                return new Event(Event.IO_REQUEST, timePassed + activeProcess.getTimeToNextIoOperation());
+            }
 
-            // hvis trenger mer tid enn tilgjengelig i cpu, og ikke IO innenfor cpu-tid
+        }else if(activeProcess.getTimeToNextIoOperation() <= maxCpuTime){
+            return new Event(Event.IO_REQUEST, clock + maxCpuTime);            }
 
-            // hvis tiden til IO request skal skje innenfor denne cpu-kjøringen
-
-
-            // hvis nok kjøretid denne gangen og ingen IO request
-
-
-
-        /*
-        * if timeNeeded < maxCPUtime
-        *   if timeNeeded < timeToNextIOrequest
-        *
-        * */
-
-        return null;
+        return new Event(Event.SWITCH_PROCESS, clock+maxCpuTime);
     }
 
     /**
