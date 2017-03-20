@@ -79,40 +79,47 @@ public class Cpu {
                 // inn i cpu (aktiv)
                 this.activeProcess = cpuQueue.pop();
                 // Sjekk event
-                Event nextEvent = getNextEvent(activeProcess, clock);
+                Event nextEvent = getNextEvent(clock);
                 // oppdater tid
-                this.activeProcess.updateTimeNeeded(nextEvent.getTime()-clock);
+
                 return nextEvent;
             }
             // hvis aktive
         }else{
             // sendes aktiv bakerst i kø
             Process currentP = this.activeProcess;
-            this.activeProcess = null;
             cpuQueue.add(currentP);
             this.activeProcess = cpuQueue.pop();
-            Event nextEvent = getNextEvent(this.activeProcess, clock);
+            Event nextEvent = getNextEvent(clock);
             //oppdater tid
-            this.activeProcess.updateTimeNeeded(nextEvent.getTime() - clock);
+            this.activeProcess = null;
             return nextEvent;
 
 
         }
     }
 
-    private Event getNextEvent(Process activeProcess, long clock) {
+    private Event getNextEvent(long clock) {
         if(activeProcess.getProcessTimeNeeded() < maxCpuTime){
             if(activeProcess.getProcessTimeNeeded() <= activeProcess.getTimeToNextIoOperation()){
-                return new Event(Event.END_PROCESS, clock + maxCpuTime);
+                activeProcess.updateTimeNeeded(activeProcess.getProcessTimeNeeded());
+                return new Event(Event.END_PROCESS, clock + activeProcess.getProcessTimeNeeded());
 
             }else if(activeProcess.getTimeToNextIoOperation() <= activeProcess.getProcessTimeNeeded()){
-                return new Event(Event.IO_REQUEST, timePassed + activeProcess.getTimeToNextIoOperation());
+                activeProcess.updateTimeNeeded(activeProcess.getTimeToNextIoOperation());
+                return new Event(Event.IO_REQUEST, clock + activeProcess.getTimeToNextIoOperation());
             }
 
-        }else if(activeProcess.getTimeToNextIoOperation() <= maxCpuTime){
-            return new Event(Event.IO_REQUEST, clock + maxCpuTime);            }
-
-        return new Event(Event.SWITCH_PROCESS, clock+maxCpuTime);
+        }
+        else if(activeProcess.getTimeToNextIoOperation() <= maxCpuTime && activeProcess.getTimeToNextIoOperation() > 0){
+            activeProcess.updateTimeNeeded(activeProcess.getTimeToNextIoOperation());
+            return new Event(Event.IO_REQUEST, clock + activeProcess.getTimeToNextIoOperation());
+        }
+        else {
+            activeProcess.updateTimeNeeded(maxCpuTime);
+            return new Event(Event.SWITCH_PROCESS, clock + maxCpuTime);
+        }
+        return null;
     }
 
     /**
