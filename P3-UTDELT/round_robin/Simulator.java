@@ -226,6 +226,7 @@ public class Simulator
 		System.out.println("end io");
 		Process p = io.removeActiveProcess();
 		eventQueue.insertEvent(cpu.insertProcess(p, clock));
+		eventQueue.insertEvent(io.startIoOperation(clock + p.getAverageIOtime()));
 
 	}
 
