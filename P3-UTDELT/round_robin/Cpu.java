@@ -88,6 +88,7 @@ public class Cpu {
                 Event nextEvent = getNextEvent(clock);
                 // oppdater tid
                 statistics.totalBusyCpuTime += nextEvent.getTime() - clock;
+                statistics.totalTimeSpentInCpu += nextEvent.getTime() - clock;
 
                 return nextEvent;
             }
@@ -103,6 +104,7 @@ public class Cpu {
                 this.activeProcess = cpuQueue.pop();
             }
             statistics.totalBusyCpuTime += nextEvent.getTime() - clock;
+            statistics.totalTimeSpentInCpu += nextEvent.getTime() - clock;
             return nextEvent;
 
 
@@ -168,6 +170,8 @@ public class Cpu {
         // korrigerings metode, for å fortelle aktiv prosess om tiden såm har gått og den har vært i CPU men IO request event har happend.
         if(this.activeProcess != null) {
             this.activeProcess.updateTimeNeeded(timePassed);
+            statistics.totalTimeSpentInCpu += timePassed;
+            statistics.totalBusyCpuTime += timePassed;
             // sjekk om den tiden som har gått gjor at faenskapet ble ferdig eller skal til IO ?
 
         }

@@ -63,6 +63,7 @@ public class Io {
         if (getActiveProcess() == null && !ioQueue.isEmpty()) {
             try {
                 this.activeProcess = this.ioQueue.pop();
+                statistics.totalTimeSpentInIo += activeProcess.getAverageIOtime();
                 return new Event(Event.END_IO, clock + activeProcess.getAverageIOtime());
             } catch (NoSuchElementException e) {
                 return null;
@@ -81,6 +82,8 @@ public class Io {
         // Incomplete
         if (this.activeProcess != null) {
             this.activeProcess.updateTimeNeeded(timePassed);
+            statistics.totalTimeSpentInIo += timePassed;
+
         }
     }
 
