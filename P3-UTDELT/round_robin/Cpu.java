@@ -44,6 +44,7 @@ public class Cpu {
 
         // add to queue
         this.cpuQueue.add(p);
+        statistics.totalNofTimesInReadyQueue++;
 
         // clock = arrival time for this process ?  The time at which the event will occur.
         if(this.activeProcess == null){
@@ -116,17 +117,21 @@ public class Cpu {
 
             }else if(activeProcess.getTimeToNextIoOperation() <= activeProcess.getProcessTimeNeeded()){
                 activeProcess.updateTimeNeeded(activeProcess.getTimeToNextIoOperation());
+                statistics.nofProcessedIoOperations++;
+
                 return new Event(Event.IO_REQUEST, clock + activeProcess.getTimeToNextIoOperation());
             }
 
         }
         else if(activeProcess.getTimeToNextIoOperation() <= maxCpuTime && activeProcess.getTimeToNextIoOperation() > 0){
             activeProcess.updateTimeNeeded(activeProcess.getTimeToNextIoOperation());
+            statistics.nofProcessedIoOperations++;
             return new Event(Event.IO_REQUEST, clock + activeProcess.getTimeToNextIoOperation());
         }
         else {
             activeProcess.updateTimeNeeded(maxCpuTime);
             statistics.nofProcessSwitches++;
+            statistics.totalNofTimesInReadyQueue++;
             return new Event(Event.SWITCH_PROCESS, clock + maxCpuTime);
         }
         return null;

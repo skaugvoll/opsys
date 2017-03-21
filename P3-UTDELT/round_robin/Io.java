@@ -91,7 +91,6 @@ public class Io {
      */
     public Process removeActiveProcess() {
         // Incomplete
-        statistics.nofProcessedIoOperations++;
         System.out.println("removing active IO process");
         Process process = this.getActiveProcess();
         this.activeProcess = null;
