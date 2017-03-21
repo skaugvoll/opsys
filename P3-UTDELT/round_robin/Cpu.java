@@ -20,8 +20,8 @@ public class Cpu {
     private long maxCpuTime; // burst time
     private Statistics statistics;
     private Process activeProcess = null;
-    private long activeProcessStart;
-    private long timePassed;
+
+
 
 
 
@@ -46,6 +46,7 @@ public class Cpu {
         this.cpuQueue.add(p);
         statistics.totalNofTimesInReadyQueue++;
 
+
         // clock = arrival time for this process ?  The time at which the event will occur.
         if(this.activeProcess == null){
             System.out.println("Legger til i CPU kø, og switcher");
@@ -69,6 +70,7 @@ public class Cpu {
         // bakerst i køen, sammen med gjennværende eksivkeringstid. og la en ny process starte.
         if(statistics.cpuQueueLargestLength < cpuQueue.size()){
             statistics.cpuQueueLargestLength = cpuQueue.size();
+
         }
 
         // hvis ikke aktiv
@@ -80,6 +82,7 @@ public class Cpu {
             }
             // Hvis kø
             else{
+//              statistics.cpuQueueLengthTime += clock;
                 // ut av kø
                 // inn i cpu (aktiv)
                 this.activeProcess = cpuQueue.pop();
@@ -175,6 +178,8 @@ public class Cpu {
             // sjekk om den tiden som har gått gjor at faenskapet ble ferdig eller skal til IO ?
 
         }
+
+        statistics.cpuQueueLengthTime += cpuQueue.size() * timePassed;
 
     }
 

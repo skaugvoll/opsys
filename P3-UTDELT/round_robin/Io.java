@@ -40,6 +40,7 @@ public class Io {
      */
     public Event addIoRequest(Process requestingProcess, long clock) {
         // Incomplete
+        statistics.totalNofTimesInIoQueue++;
         this.ioQueue.add(requestingProcess);
         if (this.getActiveProcess() == null) {
             return this.startIoOperation(clock);
@@ -80,10 +81,13 @@ public class Io {
      */
     public void timePassed(long timePassed) {
         // Incomplete
+        statistics.ioQueueLengthTime += ioQueue.size() * timePassed;
         if (this.activeProcess != null) {
             this.activeProcess.updateTimeNeeded(timePassed);
             statistics.totalTimeSpentInIo += timePassed;
-
+        }
+        else{
+            statistics.totalTimeSpentWaitingForIo += timePassed;
         }
     }
 
