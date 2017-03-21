@@ -56,6 +56,10 @@ public class Io {
      * or null	if no operation was initiated.
      */
     public Event startIoOperation(long clock) {
+        if(statistics.ioQueueLargestLength < ioQueue.size()){
+            statistics.ioQueueLargestLength = ioQueue.size();
+        }
+
         if (getActiveProcess() == null && !ioQueue.isEmpty()) {
             try {
                 this.activeProcess = this.ioQueue.pop();
@@ -87,6 +91,7 @@ public class Io {
      */
     public Process removeActiveProcess() {
         // Incomplete
+        statistics.nofProcessedIoOperations++;
         System.out.println("removing active IO process");
         Process process = this.getActiveProcess();
         this.activeProcess = null;

@@ -24,6 +24,7 @@ public class Cpu {
     private long timePassed;
 
 
+
     public Cpu(LinkedList<Process> cpuQueue, long maxCpuTime, Statistics statistics) {
         this.cpuQueue = cpuQueue;
         this. maxCpuTime = maxCpuTime;
@@ -39,6 +40,7 @@ public class Cpu {
      *				or null	if no process was activated.
      */
     public Event insertProcess(Process p, long clock) {
+
 
         // add to queue
         this.cpuQueue.add(p);
@@ -80,9 +82,11 @@ public class Cpu {
                 // ut av kø
                 // inn i cpu (aktiv)
                 this.activeProcess = cpuQueue.pop();
+
                 // Sjekk event
                 Event nextEvent = getNextEvent(clock);
                 // oppdater tid
+                statistics.totalBusyCpuTime += nextEvent.getTime() - clock;
 
                 return nextEvent;
             }
@@ -97,6 +101,7 @@ public class Cpu {
                 cpuQueue.add(currentP);
                 this.activeProcess = cpuQueue.pop();
             }
+            statistics.totalBusyCpuTime += nextEvent.getTime() - clock;
             return nextEvent;
 
 
@@ -121,6 +126,7 @@ public class Cpu {
         }
         else {
             activeProcess.updateTimeNeeded(maxCpuTime);
+            statistics.nofProcessSwitches++;
             return new Event(Event.SWITCH_PROCESS, clock + maxCpuTime);
         }
         return null;
