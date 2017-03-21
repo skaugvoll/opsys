@@ -86,13 +86,15 @@ public class Cpu {
             }
             // hvis aktive
         }else{
-            // sendes aktiv bakerst i kø
-            Process currentP = this.activeProcess;
-            cpuQueue.add(currentP);
-            this.activeProcess = cpuQueue.pop();
             Event nextEvent = getNextEvent(clock);
-            //oppdater tid
-//            this.activeProcess = null;
+            // Sjekk om next event er switch, skal CPU-kø oppdateres
+            // hvis ikke skal bare event returneres
+            if (nextEvent.getType() == Event.SWITCH_PROCESS) {
+                // sendes aktiv bakerst i kø
+                Process currentP = this.activeProcess;
+                cpuQueue.add(currentP);
+                this.activeProcess = cpuQueue.pop();
+            }
             return nextEvent;
 
 
