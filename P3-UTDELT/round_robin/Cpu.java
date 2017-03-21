@@ -64,7 +64,9 @@ public class Cpu {
     public Event switchProcess(long clock) {
         // round robin, hvor lang tid er det igjen av processen? hvis den ikke er ferdig, så legg den tilbake
         // bakerst i køen, sammen med gjennværende eksivkeringstid. og la en ny process starte.
-
+        if(statistics.cpuQueueLargestLength < cpuQueue.size()){
+            statistics.cpuQueueLargestLength = cpuQueue.size();
+        }
 
         // hvis ikke aktiv
         if(this.activeProcess == null){
