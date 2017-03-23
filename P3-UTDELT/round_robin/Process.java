@@ -95,7 +95,7 @@ public class Process {
         statistics.totalNofTimesInReadyQueue += nofTimesInReadyQueue;
         statistics.totalNofTimesInIoQueue += nofTimesInIoQueue;
 
-        statistics.nofCompletedProcesses++;
+//        statistics.nofCompletedProcesses++;
 	}
 
 	public long getProcessId() {

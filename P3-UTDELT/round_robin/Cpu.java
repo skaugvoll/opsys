@@ -20,7 +20,7 @@ public class Cpu {
     private long maxCpuTime; // burst time
     private Statistics statistics;
     private Process activeProcess = null;
-
+    private long timeAddedToQueue = 0;
 
 
 
@@ -45,6 +45,8 @@ public class Cpu {
         // add to queue
         this.cpuQueue.add(p);
         statistics.totalNofTimesInReadyQueue++;
+        timeAddedToQueue = clock;
+
 
 
         // clock = arrival time for this process ?  The time at which the event will occur.
@@ -104,6 +106,7 @@ public class Cpu {
                 // sendes aktiv bakerst i kø
                 Process currentP = this.activeProcess;
                 cpuQueue.add(currentP);
+                timeAddedToQueue = clock;
                 this.activeProcess = cpuQueue.pop();
             }
             statistics.totalBusyCpuTime += nextEvent.getTime() - clock;
@@ -137,6 +140,7 @@ public class Cpu {
             activeProcess.updateTimeNeeded(maxCpuTime);
             statistics.nofProcessSwitches++;
             statistics.totalNofTimesInReadyQueue++;
+            statistics.totalTimeSpentInReadyQueue += clock - timeAddedToQueue;
             return new Event(Event.SWITCH_PROCESS, clock + maxCpuTime);
         }
         return null;
@@ -168,9 +172,9 @@ public class Cpu {
      */
     public void timePassed(long timePassed) {
         System.out.println("Time passed: " + timePassed);
-        // Incomplete
         // oppdaterer hvor lenge prossessen har vært i cpu. (blir bre brukt her, ellers statestikk)
         // korrigerings metode, for å fortelle aktiv prosess om tiden såm har gått og den har vært i CPU men IO request event har happend.
+
         if(this.activeProcess != null) {
             this.activeProcess.updateTimeNeeded(timePassed);
             statistics.totalTimeSpentInCpu += timePassed;

@@ -164,13 +164,6 @@ public class Simulator
 			// Also add new events to the event queue if needed
             eventQueue.insertEvent(this.cpu.insertProcess(p, clock));
 
-
-			// Since we haven't implemented the CPU and I/O device yet,
-			// we let the process leave the system immediately, for now.
-//			memory.processCompleted(p);
-//			// Try to use the freed memory:
-//			transferProcessFromMemToReady();
-			// Update statistics
 			p.updateStatistics(statistics);
 
 			// Check for more free memory
@@ -193,12 +186,12 @@ public class Simulator
 	 * Ends the active process, and deallocates any resources allocated to it.
 	 */
 	private void endProcess() {
-		// Incomplete
 		//hent fra cpu den aktive prosessen og avslutt den
 		System.out.println("end process");
 		Process activeProcess = cpu.getActiveProcess();
 		eventQueue.insertEvent(cpu.activeProcessLeft(clock));
 		memory.processCompleted(activeProcess);
+		statistics.nofCompletedProcesses++;
 	}
 
 	/**
