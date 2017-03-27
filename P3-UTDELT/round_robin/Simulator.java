@@ -147,6 +147,7 @@ public class Simulator
 		eventQueue.insertEvent(new Event(Event.NEW_PROCESS, nextArrivalTime));
 		// Update statistics
 		statistics.nofCreatedProcesses++;
+        newProcess.updateStatistics(statistics);
     }
 
 	/**
@@ -164,7 +165,7 @@ public class Simulator
 			// Also add new events to the event queue if needed
             eventQueue.insertEvent(this.cpu.insertProcess(p, clock));
 
-			p.updateStatistics(statistics);
+			//p.updateStatistics(statistics);
 
 			// Check for more free memory
 			p =	 memory.checkMemory(clock);
@@ -192,6 +193,7 @@ public class Simulator
 		eventQueue.insertEvent(cpu.activeProcessLeft(clock));
 		memory.processCompleted(activeProcess);
 		statistics.nofCompletedProcesses++;
+
 	}
 
 	/**
