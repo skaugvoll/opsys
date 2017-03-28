@@ -92,7 +92,7 @@ public class Cpu {
                 // Sjekk event
                 Event nextEvent = getNextEvent(clock);
                 // oppdater tid
-                statistics.totalBusyCpuTime += nextEvent.getTime() - clock;
+//                statistics.totalBusyCpuTime += nextEvent.getTime() - clock;
                 statistics.totalTimeSpentInCpu += nextEvent.getTime() - clock;
 
                 return nextEvent;
@@ -109,7 +109,7 @@ public class Cpu {
                 timeAddedToQueue = clock;
                 this.activeProcess = cpuQueue.pop();
             }
-            statistics.totalBusyCpuTime += nextEvent.getTime() - clock;
+//            statistics.totalBusyCpuTime += nextEvent.getTime() - clock;
             statistics.totalTimeSpentInCpu += nextEvent.getTime() - clock;
             return nextEvent;
 
@@ -121,12 +121,13 @@ public class Cpu {
         if(activeProcess.getProcessTimeNeeded() <= maxCpuTime){
             if(activeProcess.getProcessTimeNeeded() <= activeProcess.getTimeToNextIoOperation()){
                 activeProcess.updateTimeNeeded(activeProcess.getProcessTimeNeeded());
+                statistics.totalBusyCpuTime += activeProcess.getProcessTimeNeeded();
                 return new Event(Event.END_PROCESS, clock + activeProcess.getProcessTimeNeeded());
 
             }else if(activeProcess.getTimeToNextIoOperation() <= activeProcess.getProcessTimeNeeded()){
                 activeProcess.updateTimeNeeded(activeProcess.getTimeToNextIoOperation());
                 statistics.nofProcessedIoOperations++;
-
+                statistics.totalBusyCpuTime += activeProcess.getTimeToNextIoOperation();
                 return new Event(Event.IO_REQUEST, clock + activeProcess.getTimeToNextIoOperation());
             }
 
@@ -134,6 +135,7 @@ public class Cpu {
         else if(activeProcess.getTimeToNextIoOperation() <= maxCpuTime && activeProcess.getTimeToNextIoOperation() > 0){
             activeProcess.updateTimeNeeded(activeProcess.getTimeToNextIoOperation());
             statistics.nofProcessedIoOperations++;
+            statistics.totalBusyCpuTime += activeProcess.getTimeToNextIoOperation();
             return new Event(Event.IO_REQUEST, clock + activeProcess.getTimeToNextIoOperation());
         }
         else {
@@ -141,6 +143,8 @@ public class Cpu {
             statistics.nofProcessSwitches++;
             statistics.totalNofTimesInReadyQueue++;
             statistics.totalTimeSpentInReadyQueue += clock - timeAddedToQueue;
+            statistics.totalBusyCpuTime += maxCpuTime;
+
             return new Event(Event.SWITCH_PROCESS, clock + maxCpuTime);
         }
         return null;

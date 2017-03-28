@@ -193,6 +193,7 @@ public class Simulator
 		eventQueue.insertEvent(cpu.activeProcessLeft(clock));
 		memory.processCompleted(activeProcess);
 		statistics.nofCompletedProcesses++;
+		activeProcess.updateStatistics(statistics);
 
 	}
 
